@@ -19,6 +19,8 @@ I set out to accomplish a few specific things in this lab:
  * Simulate a security violation to see the defense mechanisms in action.
 
 ## My Network Design
+<img width="794" height="534" alt="topology" src="https://github.com/user-attachments/assets/9ce596dc-d132-4a77-b00a-e8115118b773" />
+
 For this lab, I connected two switches using redundant trunk links. I decided to split the network into three different broadcast domains to keep things organized and secure:
 
 
