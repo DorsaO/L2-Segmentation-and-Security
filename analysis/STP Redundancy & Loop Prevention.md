@@ -1,43 +1,73 @@
 ## What Was Happening
 
-In this phase of the lab, I created a redundant Layer 2 path between two switches by connecting them with two trunk links.
-While redundancy increases availability, it also introduces the risk of Layer 2 loops, which can lead to broadcast storms and complete network failure.
-To manage this risk, Spanning Tree Protocol (STP) was enabled and manually tuned.
-Switch0 was configured as the Root Bridge for VLAN 10 by lowering its bridge priority.
+In this phase of the lab, I introduced redundancy by connecting two switches with two trunk links.
 
----
+While redundancy improves availability, it also creates the risk of Layer 2 loops, which can lead to broadcast storms and complete network instability.
 
-## What Stood Out in the Behavior
+Spanning Tree Protocol (STP) was enabled and manually tuned to control the topology.
 
-After configuring the root priority, the STP topology recalculated and a new logical tree was formed.
-Switch0 successfully became the Root Bridge.
-On Switch1, one of the trunk interfaces transitioned into the Root Port state (Forwarding), while the other redundant link moved into a Blocking (Alternate) state.
-This clearly demonstrated that STP was actively preventing a Layer 2 loop.
 
-One important observation was that before both trunk links were fully configured for VLAN 10, STP did not block any interface — because technically there was no loop detected. Once both links were active for the same VLAN, STP immediately recalculated and blocked the redundant path.
+## Trunk Configuration Verification
 
----
+Both inter-switch links were configured as trunk ports to carry multiple VLANs.
+
+📷 Switch0 trunk status:  
+`screenshots/SW0-Trunk-Status.png`
+
+📷 Switch1 trunk status:  
+`screenshots/SW1-Trunk-Status.png`
+
+The trunk outputs confirm that VLAN 10 is allowed and active across both links.
+
+
+## Root Bridge Election
+
+Switch0 was manually configured as the Root Bridge by lowering its bridge priority.
+
+After STP recalculation:
+
+📷 Root verification on Switch0:  
+`screenshots/SW0-STP-VLAN10-Root.png`
+
+The output confirms that Switch0 is acting as the Root Bridge for VLAN 10.
+
+
+## Loop Prevention in Action
+
+Since two trunk links exist between the switches, STP must block one of them to prevent a Layer 2 loop.
+
+On Switch1:
+
+📷 Blocking port verification:  
+`screenshots/SW1-STP-VLAN10-Blocking.png`
+
+One interface remains in Forwarding state (Root Port), while the redundant link transitions to Blocking (Alternate) state.
+
+This confirms that STP is actively preventing broadcast loops.
+
+
+## Why This Matters
+
+Layer 2 loops are especially dangerous because Ethernet does not include a TTL mechanism like IP.
+
+Without STP, frames could circulate indefinitely, causing network congestion and outages.
+
+This lab clearly demonstrates how STP dynamically builds a loop-free topology while maintaining redundancy.
+
 
 ## Key Indicators
 
 - Switch0 elected as Root Bridge  
-- Bridge priority manually configured  
-- One trunk link in Forwarding state  
-- One redundant trunk link in Blocking state  
+- Manual bridge priority configuration  
+- One trunk link forwarding  
+- One trunk link blocked  
 - No broadcast storm observed  
 
----
-
-## Why This Matters
-
-Layer 2 loops are extremely dangerous because Ethernet does not include a TTL mechanism like IP.
-If STP is not functioning properly, a single misconfiguration can cause uncontrolled broadcast replication and bring down the entire network.
-This lab clearly shows how STP dynamically selects the best path and disables redundant links while keeping them available as backup.
-
----
 
 ## Conclusion
 
-The implementation confirms that STP is essential whenever redundant Layer 2 links exist.
-By controlling root bridge election and verifying port states, I ensured the network remains both redundant and stable.
-This phase demonstrates the importance of understanding not just how to configure redundancy, but how to control it safely.
+This phase confirms that STP is essential whenever redundant Layer 2 links exist.
+
+By controlling root bridge election and verifying port states, the network remains both redundant and stable.
+
+Redundancy without control is dangerous — STP ensures redundancy remains safe.
